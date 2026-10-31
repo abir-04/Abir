@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.abir.assistant.account.AccountActivity
 import com.abir.assistant.ai.AIAssistant
 import com.abir.assistant.chat.ChatActivity
 import com.abir.assistant.core.NetworkUtils
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         addButton("Voice Settings", VoiceSettingsActivity::class.java)
         addButton("Rankings", RankingsActivity::class.java)
         addButton("Gifts", GiftsActivity::class.java)
+        addButton("Account & Sync", AccountActivity::class.java)
         addButton("Privacy", PrivacyActivity::class.java)
 
         val testAi = Button(this).apply {

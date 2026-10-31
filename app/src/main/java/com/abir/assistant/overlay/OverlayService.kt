@@ -17,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.abir.assistant.ai.AIAssistant
 import com.abir.assistant.core.BatterySaver
+import com.abir.assistant.core.SettingsManager
 
 class OverlayService : Service() {
 
@@ -25,10 +26,7 @@ class OverlayService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private var autoHideRunnable: Runnable? = null
     private lateinit var ai: AIAssistant
-
-    private var bubbleSize = 48
-    private var bubbleOpacity = 0.8f
-    private var autoHideDelay = 5000L
+    private lateinit var settings: SettingsManager
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -39,6 +37,7 @@ class OverlayService : Service() {
             return
         }
         ai = AIAssistant(this)
+        settings = SettingsManager(this)
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createOverlay()
     }
@@ -61,9 +60,10 @@ class OverlayService : Service() {
         val quickButtons = overlayView?.findViewById<LinearLayout>(R.id.quick_buttons)
         val history = overlayView?.findViewById<TextView>(R.id.history_preview)
 
-        icon?.layoutParams?.width = bubbleSize
-        icon?.layoutParams?.height = bubbleSize
-        overlayView?.alpha = bubbleOpacity
+        val size = settings.bubbleSize
+        icon?.layoutParams?.width = size
+        icon?.layoutParams?.height = size
+        overlayView?.alpha = settings.bubbleOpacity
 
         fun ask(question: String) {
             ai.ask(question) { answer ->
@@ -112,7 +112,7 @@ class OverlayService : Service() {
             overlayView?.findViewById<LinearLayout>(R.id.quick_buttons)?.visibility = View.GONE
             overlayView?.findViewById<TextView>(R.id.history_preview)?.visibility = View.GONE
         }
-        handler.postDelayed(autoHideRunnable!!, autoHideDelay)
+        handler.postDelayed(autoHideRunnable!!, settings.autoHideDelay)
     }
 
     override fun onDestroy() {
