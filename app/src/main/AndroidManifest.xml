@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -34,10 +35,15 @@
         <activity android:name=".settings.VoiceSettingsActivity" />
         <activity android:name=".screen.ScreenCaptureActivity" />
         <activity android:name=".social.RankingsActivity" />
+        <activity android:name=".social.GiftsActivity" />
         <activity android:name=".core.ErrorActivity" />
 
         <service
             android:name=".overlay.OverlayService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".study.ReminderReceiver"
             android:exported="false" />
     </application>
 </manifest>
