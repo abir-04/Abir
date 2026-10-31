@@ -34,6 +34,7 @@
         <activity android:name=".settings.VoiceSettingsActivity" />
         <activity android:name=".screen.ScreenCaptureActivity" />
         <activity android:name=".social.RankingsActivity" />
+        <activity android:name=".core.ErrorActivity" />
 
         <service
             android:name=".overlay.OverlayService"
