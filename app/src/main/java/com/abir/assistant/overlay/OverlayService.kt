@@ -3,22 +3,30 @@ package com.abir.assistant.overlay
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 
-/**
- * Floating overlay bubble service for the AI Assistant.
- * Supports size, opacity, auto-hide, and quick question buttons.
- */
 class OverlayService : Service() {
 
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
+    private val handler = Handler(Looper.getMainLooper())
+    private var autoHideRunnable: Runnable? = null
+
+    // Settings (load from SharedPreferences later)
+    private var bubbleSize = 48
+    private var bubbleOpacity = 0.8f
+    private var autoHideDelay = 5000L // ms
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -33,7 +41,7 @@ class OverlayService : Service() {
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
@@ -42,14 +50,68 @@ class OverlayService : Service() {
         }
 
         overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_bubble, null)
-        // TODO: Add size/opacity from settings
-        // TODO: Quick question buttons
-        // TODO: Auto-hide logic
+        val icon = overlayView?.findViewById<ImageView>(R.id.bubble_icon)
+        val quickButtons = overlayView?.findViewById<LinearLayout>(R.id.quick_buttons)
+        val history = overlayView?.findViewById<TextView>(R.id.history_preview)
+
+        // Apply size & opacity
+        icon?.layoutParams?.width = bubbleSize
+        icon?.layoutParams?.height = bubbleSize
+        overlayView?.alpha = bubbleOpacity
+
+        // Quick question buttons
+        overlayView?.findViewById<Button>(R.id.btn_counter)?.setOnClickListener {
+            // TODO: Call AI with "Counter this hero"
+            history?.text = "Counter tips..."
+            history?.visibility = View.VISIBLE
+        }
+        overlayView?.findViewById<Button>(R.id.btn_build)?.setOnClickListener {
+            history?.text = "Build tips..."
+            history?.visibility = View.VISIBLE
+        }
+
+        // Drag to move + tap to expand
+        var initialX = 0
+        var initialY = 0
+        var initialTouchX = 0f
+        var initialTouchY = 0f
+
+        overlayView?.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initialX = params.x
+                    initialY = params.y
+                    initialTouchX = event.rawX
+                    initialTouchY = event.rawY
+                    quickButtons?.visibility = View.VISIBLE
+                    scheduleAutoHide()
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    params.x = initialX + (event.rawX - initialTouchX).toInt()
+                    params.y = initialY + (event.rawY - initialTouchY).toInt()
+                    windowManager.updateViewLayout(overlayView, params)
+                    true
+                }
+                else -> false
+            }
+        }
 
         windowManager.addView(overlayView, params)
+        scheduleAutoHide()
+    }
+
+    private fun scheduleAutoHide() {
+        autoHideRunnable?.let { handler.removeCallbacks(it) }
+        autoHideRunnable = Runnable {
+            overlayView?.findViewById<LinearLayout>(R.id.quick_buttons)?.visibility = View.GONE
+            overlayView?.findViewById<TextView>(R.id.history_preview)?.visibility = View.GONE
+        }
+        handler.postDelayed(autoHideRunnable!!, autoHideDelay)
     }
 
     override fun onDestroy() {
+        autoHideRunnable?.let { handler.removeCallbacks(it) }
         overlayView?.let { windowManager.removeView(it) }
         super.onDestroy()
     }
