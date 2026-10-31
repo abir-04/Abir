@@ -29,6 +29,7 @@ class StudyModeActivity : AppCompatActivity() {
         val startBtn = Button(this).apply { text = "Start Focus" }
         val photoBtn = Button(this).apply { text = "Take Textbook Photo" }
         val practiceBtn = Button(this).apply { text = "Generate Practice Question" }
+        val reminderBtn = Button(this).apply { text = "Set 30min Reminder" }
 
         startBtn.setOnClickListener {
             if (!isRunning) startFocusTimer() else stopTimer()
@@ -49,10 +50,16 @@ class StudyModeActivity : AppCompatActivity() {
             }
         }
 
+        reminderBtn.setOnClickListener {
+            ReminderManager(this).scheduleReminder(30, "Time to review your notes!")
+            Toast.makeText(this, "Reminder set for 30 minutes", Toast.LENGTH_SHORT).show()
+        }
+
         layout.addView(status)
         layout.addView(startBtn)
         layout.addView(photoBtn)
         layout.addView(practiceBtn)
+        layout.addView(reminderBtn)
         setContentView(layout)
     }
 
@@ -81,7 +88,6 @@ class StudyModeActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 100 && resultCode == RESULT_OK) {
             status.text = "Photo captured! (AI analysis coming soon)"
-            // TODO: Send image to AI
         }
     }
 }

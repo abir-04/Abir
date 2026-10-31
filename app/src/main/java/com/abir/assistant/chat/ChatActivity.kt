@@ -1,11 +1,16 @@
 package com.abir.assistant.chat
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.abir.assistant.ai.AIAssistant
 
@@ -29,7 +34,8 @@ class ChatActivity : AppCompatActivity() {
         listView = ListView(this)
         val input = EditText(this).apply { hint = "Ask something..." }
         val send = Button(this).apply { text = "Send" }
-        val pin = Button(this).apply { text = "Pin selected (coming)" }
+        val copy = Button(this).apply { text = "Copy last" }
+        val share = Button(this).apply { text = "Share last" }
 
         search.setOnEditorActionListener { _, _, _ ->
             val query = search.text.toString()
@@ -49,11 +55,30 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
+        copy.setOnClickListener {
+            if (messages.isNotEmpty()) {
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("answer", messages[0]))
+                Toast.makeText(this, "Copied", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        share.setOnClickListener {
+            if (messages.isNotEmpty()) {
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, messages[0])
+                }
+                startActivity(Intent.createChooser(intent, "Share answer"))
+            }
+        }
+
         layout.addView(search)
         layout.addView(listView, LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
         layout.addView(input)
         layout.addView(send)
-        layout.addView(pin)
+        layout.addView(copy)
+        layout.addView(share)
         setContentView(layout)
 
         messages.addAll(historyManager.getHistory())
