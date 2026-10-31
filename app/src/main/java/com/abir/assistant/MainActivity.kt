@@ -4,17 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.abir.assistant.ai.AIAssistant
 import com.abir.assistant.chat.ChatActivity
+import com.abir.assistant.core.NetworkUtils
 import com.abir.assistant.mlbb.HeroPickerActivity
 import com.abir.assistant.overlay.BubbleSettingsActivity
 import com.abir.assistant.privacy.PrivacyActivity
+import com.abir.assistant.screen.ScreenCaptureActivity
+import com.abir.assistant.settings.ThemeActivity
+import com.abir.assistant.settings.VoiceSettingsActivity
 import com.abir.assistant.study.StudyModeActivity
 import com.abir.assistant.titles.TitlesActivity
 
-/**
- * Main launcher with buttons to all features.
- */
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,14 +36,28 @@ class MainActivity : AppCompatActivity() {
             layout.addView(btn)
         }
 
-        addButton("Open Overlay Settings", BubbleSettingsActivity::class.java)
-        addButton("Hero Picker (MLBB)", HeroPickerActivity::class.java)
+        addButton("Overlay Settings", BubbleSettingsActivity::class.java)
+        addButton("Hero Picker", HeroPickerActivity::class.java)
         addButton("Study Mode", StudyModeActivity::class.java)
-        addButton("Titles & Avatars", TitlesActivity::class.java)
+        addButton("Titles", TitlesActivity::class.java)
         addButton("Chat", ChatActivity::class.java)
+        addButton("Screen Capture", ScreenCaptureActivity::class.java)
+        addButton("Themes", ThemeActivity::class.java)
+        addButton("Voice Settings", VoiceSettingsActivity::class.java)
         addButton("Privacy", PrivacyActivity::class.java)
 
-        // TODO: Start OverlayService button (needs permission)
+        val testAi = Button(this).apply {
+            text = "Test AI"
+            setOnClickListener {
+                if (NetworkUtils.isOffline(this@MainActivity)) {
+                    Toast.makeText(this@MainActivity, "Offline mode", Toast.LENGTH_SHORT).show()
+                }
+                AIAssistant(this@MainActivity).ask("Counter this hero") { answer ->
+                    Toast.makeText(this@MainActivity, answer, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+        layout.addView(testAi)
 
         setContentView(layout)
     }
