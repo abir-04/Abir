@@ -33,6 +33,7 @@
         <activity android:name=".settings.ThemeActivity" />
         <activity android:name=".settings.VoiceSettingsActivity" />
         <activity android:name=".screen.ScreenCaptureActivity" />
+        <activity android:name=".social.RankingsActivity" />
 
         <service
             android:name=".overlay.OverlayService"

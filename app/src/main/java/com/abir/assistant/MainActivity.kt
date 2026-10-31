@@ -15,7 +15,9 @@ import com.abir.assistant.privacy.PrivacyActivity
 import com.abir.assistant.screen.ScreenCaptureActivity
 import com.abir.assistant.settings.ThemeActivity
 import com.abir.assistant.settings.VoiceSettingsActivity
+import com.abir.assistant.social.RankingsActivity
 import com.abir.assistant.study.StudyModeActivity
+import com.abir.assistant.titles.AvatarBoardActivity
 import com.abir.assistant.titles.TitlesActivity
 
 class MainActivity : AppCompatActivity() {
@@ -40,10 +42,12 @@ class MainActivity : AppCompatActivity() {
         addButton("Hero Picker", HeroPickerActivity::class.java)
         addButton("Study Mode", StudyModeActivity::class.java)
         addButton("Titles", TitlesActivity::class.java)
+        addButton("Avatar Boards", AvatarBoardActivity::class.java)
         addButton("Chat", ChatActivity::class.java)
         addButton("Screen Capture", ScreenCaptureActivity::class.java)
         addButton("Themes", ThemeActivity::class.java)
         addButton("Voice Settings", VoiceSettingsActivity::class.java)
+        addButton("Rankings", RankingsActivity::class.java)
         addButton("Privacy", PrivacyActivity::class.java)
 
         val testAi = Button(this).apply {
