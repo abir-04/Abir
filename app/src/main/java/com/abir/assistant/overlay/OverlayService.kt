@@ -65,8 +65,11 @@ class OverlayService : Service() {
         icon?.layoutParams?.height = size
         overlayView?.alpha = settings.bubbleOpacity
 
+        val selectedHero = getSharedPreferences("mlbb", MODE_PRIVATE).getString("selected_hero", null)
+
         fun ask(question: String) {
-            ai.ask(question) { answer ->
+            val full = if (selectedHero != null) "$question for $selectedHero" else question
+            ai.ask(full) { answer ->
                 history?.text = answer
                 history?.visibility = View.VISIBLE
             }

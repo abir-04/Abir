@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -13,18 +14,21 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.abir.assistant.ai.AIAssistant
+import java.util.Locale
 
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private lateinit var historyManager: AnswerHistoryManager
     private lateinit var listView: ListView
     private val messages = mutableListOf<String>()
     private lateinit var ai: AIAssistant
+    private var tts: TextToSpeech? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         historyManager = AnswerHistoryManager(this)
         ai = AIAssistant(this)
+        tts = TextToSpeech(this, this)
 
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -36,6 +40,7 @@ class ChatActivity : AppCompatActivity() {
         val send = Button(this).apply { text = "Send" }
         val copy = Button(this).apply { text = "Copy last" }
         val share = Button(this).apply { text = "Share last" }
+        val read = Button(this).apply { text = "Read aloud" }
 
         search.setOnEditorActionListener { _, _, _ ->
             val query = search.text.toString()
@@ -73,16 +78,34 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
+        read.setOnClickListener {
+            if (messages.isNotEmpty()) {
+                tts?.speak(messages[0], TextToSpeech.QUEUE_FLUSH, null, null)
+            }
+        }
+
         layout.addView(search)
         layout.addView(listView, LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
         layout.addView(input)
         layout.addView(send)
         layout.addView(copy)
         layout.addView(share)
+        layout.addView(read)
         setContentView(layout)
 
         messages.addAll(historyManager.getHistory())
         refreshList()
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            tts?.language = Locale.US
+        }
+    }
+
+    override fun onDestroy() {
+        tts?.shutdown()
+        super.onDestroy()
     }
 
     private fun refreshList() {
