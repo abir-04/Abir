@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
 
     <application
         android:allowBackup="true"
@@ -25,11 +26,13 @@
         <activity android:name=".mlbb.HeroPickerActivity" />
         <activity android:name=".study.StudyModeActivity" />
         <activity android:name=".titles.TitlesActivity" />
+        <activity android:name=".titles.AvatarBoardActivity" />
         <activity android:name=".chat.ChatActivity" />
         <activity android:name=".privacy.PrivacyActivity" />
         <activity android:name=".overlay.BubbleSettingsActivity" />
         <activity android:name=".settings.ThemeActivity" />
         <activity android:name=".settings.VoiceSettingsActivity" />
+        <activity android:name=".screen.ScreenCaptureActivity" />
 
         <service
             android:name=".overlay.OverlayService"

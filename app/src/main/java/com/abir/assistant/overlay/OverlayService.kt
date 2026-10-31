@@ -15,6 +15,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.abir.assistant.ai.AIAssistant
+import com.abir.assistant.core.BatterySaver
 
 class OverlayService : Service() {
 
@@ -22,16 +24,21 @@ class OverlayService : Service() {
     private var overlayView: View? = null
     private val handler = Handler(Looper.getMainLooper())
     private var autoHideRunnable: Runnable? = null
+    private lateinit var ai: AIAssistant
 
-    // Settings (load from SharedPreferences later)
     private var bubbleSize = 48
     private var bubbleOpacity = 0.8f
-    private var autoHideDelay = 5000L // ms
+    private var autoHideDelay = 5000L
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
+        if (BatterySaver.shouldPauseOverlay(this)) {
+            stopSelf()
+            return
+        }
+        ai = AIAssistant(this)
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createOverlay()
     }
@@ -54,23 +61,21 @@ class OverlayService : Service() {
         val quickButtons = overlayView?.findViewById<LinearLayout>(R.id.quick_buttons)
         val history = overlayView?.findViewById<TextView>(R.id.history_preview)
 
-        // Apply size & opacity
         icon?.layoutParams?.width = bubbleSize
         icon?.layoutParams?.height = bubbleSize
         overlayView?.alpha = bubbleOpacity
 
-        // Quick question buttons
-        overlayView?.findViewById<Button>(R.id.btn_counter)?.setOnClickListener {
-            // TODO: Call AI with "Counter this hero"
-            history?.text = "Counter tips..."
-            history?.visibility = View.VISIBLE
-        }
-        overlayView?.findViewById<Button>(R.id.btn_build)?.setOnClickListener {
-            history?.text = "Build tips..."
-            history?.visibility = View.VISIBLE
+        fun ask(question: String) {
+            ai.ask(question) { answer ->
+                history?.text = answer
+                history?.visibility = View.VISIBLE
+            }
         }
 
-        // Drag to move + tap to expand
+        overlayView?.findViewById<Button>(R.id.btn_counter)?.setOnClickListener { ask("Counter this hero") }
+        overlayView?.findViewById<Button>(R.id.btn_build)?.setOnClickListener { ask("Build tips") }
+        overlayView?.findViewById<Button>(R.id.btn_tips)?.setOnClickListener { ask("General tips") }
+
         var initialX = 0
         var initialY = 0
         var initialTouchX = 0f
