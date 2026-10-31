@@ -2,7 +2,7 @@
 
 Personal AI Assistant with overlay support for Mobile Legends (and other games), study mode, and modular features.
 
-## Planned Features
+## Features Implemented (in progress)
 
 ### Overlay (Mobile Legends focus)
 - Quick-question buttons (e.g. "Counter this hero", "Build tips")
@@ -25,13 +25,25 @@ Personal AI Assistant with overlay support for Mobile Legends (and other games),
 - Privacy settings
 - Error screens and offline mode
 
-## Status
-Starter repository. Features to be added incrementally.
+## Project Structure
+```
+app/
+  src/main/
+    java/com/abir/assistant/
+      overlay/          # Bubble service, settings
+      mlbb/             # Mobile Legends specific (hero picker, counters)
+      study/            # Study mode
+      titles/           # Titles & avatar boards
+      chat/             # Chat history
+      core/             # Shared utils, AI interface
+```
 
-## Tech Stack (planned)
+## Tech Stack
 - Android (Kotlin)
-- Overlay service for floating bubble
-- Optional Firebase for accounts/sync
-- Modular system for mods/features
+- Overlay via WindowManager / SYSTEM_ALERT_WINDOW
+- Modular feature modules
+- Room for local storage (history, titles)
+- Optional Firebase later
 
-Created with help from Grok.
+## Next
+Core overlay + hero features being added.
