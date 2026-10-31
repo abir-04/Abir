@@ -9,11 +9,18 @@ import androidx.appcompat.app.AppCompatActivity
 class HeroPickerActivity : AppCompatActivity() {
 
     private val heroes = listOf(
-        "Layla", "Miya", "Bruno", "Clint", "Moskov",
-        "Fanny", "Hayabusa", "Lancelot", "Gusion", "Helcurt",
-        "Tigreal", "Franco", "Akai", "Grock", "Hylos",
-        "Angela", "Estes", "Rafaela", "Nana", "Diggie"
-        // TODO: Expand full hero list + roles (Marksman, Assassin, Tank, Support, Mage, Fighter)
+        // Marksman
+        "Layla", "Miya", "Bruno", "Clint", "Moskov", "Irithel", "Karrie", "Hanabi", "Claude", "Granger",
+        // Assassin
+        "Fanny", "Hayabusa", "Lancelot", "Gusion", "Helcurt", "Saber", "Karina", "Natalia", "Ling", "Benedetta",
+        // Tank
+        "Tigreal", "Franco", "Akai", "Grock", "Hylos", "Johnson", "Minotaur", "Lolita", "Belerick", "Khufra",
+        // Support
+        "Angela", "Estes", "Rafaela", "Nana", "Diggie", "Mathilda", "Floryn", "Carmilla",
+        // Mage
+        "Eudora", "Gord", "Kagura", "Cyclops", "Aurora", "Vexana", "Harley", "Lunox", "Chang'e", "Valir",
+        // Fighter
+        "Balmond", "Alucard", "Bane", "Zilong", "Freya", "Chou", "Sun", "Alpha", "Ruby", "Martis"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,14 +31,12 @@ class HeroPickerActivity : AppCompatActivity() {
 
         listView.setOnItemClickListener { _, _, position, _ ->
             val hero = heroes[position]
-            // Save selected hero (SharedPreferences for now)
             getSharedPreferences("mlbb", MODE_PRIVATE)
                 .edit()
                 .putString("selected_hero", hero)
                 .apply()
 
             Toast.makeText(this, "Selected: $hero", Toast.LENGTH_SHORT).show()
-            // TODO: Open quick questions or send to AI overlay
             finish()
         }
 

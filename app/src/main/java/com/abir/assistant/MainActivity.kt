@@ -1,7 +1,10 @@
 package com.abir.assistant
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -12,6 +15,7 @@ import com.abir.assistant.chat.ChatActivity
 import com.abir.assistant.core.NetworkUtils
 import com.abir.assistant.mlbb.HeroPickerActivity
 import com.abir.assistant.overlay.BubbleSettingsActivity
+import com.abir.assistant.overlay.OverlayService
 import com.abir.assistant.privacy.PrivacyActivity
 import com.abir.assistant.screen.ScreenCaptureActivity
 import com.abir.assistant.settings.ThemeActivity
@@ -39,6 +43,21 @@ class MainActivity : AppCompatActivity() {
             }
             layout.addView(btn)
         }
+
+        val startOverlay = Button(this).apply {
+            text = "Start Overlay Bubble"
+            setOnClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this@MainActivity)) {
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                    startActivity(intent)
+                    Toast.makeText(this@MainActivity, "Grant overlay permission then try again", Toast.LENGTH_LONG).show()
+                } else {
+                    startService(Intent(this@MainActivity, OverlayService::class.java))
+                    Toast.makeText(this@MainActivity, "Overlay started", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        layout.addView(startOverlay)
 
         addButton("Overlay Settings", BubbleSettingsActivity::class.java)
         addButton("Hero Picker", HeroPickerActivity::class.java)
