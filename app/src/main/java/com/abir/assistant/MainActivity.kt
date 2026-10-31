@@ -57,7 +57,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        val stopOverlay = Button(this).apply {
+            text = "Stop Overlay Bubble"
+            setOnClickListener {
+                stopService(Intent(this@MainActivity, OverlayService::class.java))
+                Toast.makeText(this@MainActivity, "Overlay stopped", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         layout.addView(startOverlay)
+        layout.addView(stopOverlay)
 
         addButton("Overlay Settings", BubbleSettingsActivity::class.java)
         addButton("Hero Picker", HeroPickerActivity::class.java)
@@ -77,7 +87,7 @@ class MainActivity : AppCompatActivity() {
             text = "Test AI"
             setOnClickListener {
                 if (NetworkUtils.isOffline(this@MainActivity)) {
-                    Toast.makeText(this@MainActivity, "Offline mode", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "You are offline. Some features limited.", Toast.LENGTH_SHORT).show()
                 }
                 AIAssistant(this@MainActivity).ask("Counter this hero") { answer ->
                     Toast.makeText(this@MainActivity, answer, Toast.LENGTH_LONG).show()
